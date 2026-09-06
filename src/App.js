@@ -2,19 +2,20 @@ import { useState, useEffect } from 'react';
 import TermSelector from './components/TermSelector';
 import CourseRow from './components/CourseRow';
 import { hasConflict } from './utilities/time';
-// Importamos nuestras herramientas de Firebase
-import { useData, database } from './utilities/firebase';
+// Importaciones actualizadas de Firebase
+import { useData, database, auth, signInWithGoogle, signOutUser } from './utilities/firebase';
+import { useAuthState } from 'react-firebase-hooks/auth';
 import { ref, set } from 'firebase/database';
 import './App.css';
 
 function App() {
   const [term, setTerm] = useState('Fall');
   const [selectedCourses, setSelectedCourses] = useState([]);
-  
-  // Estado local para guardar los cursos extraídos de internet
   const [apiData, setApiData] = useState(null);
+  
+  // NUEVO: Escuchamos el estado del usuario autenticado
+  const [user] = useAuthState(auth);
 
-  // LECTURA 1: Obtenemos los cursos de la API (para simular que la DB ya tiene datos)
   useEffect(() => {
     fetch('https://courses.cs.northwestern.edu/394/guides/data/cs-courses.php')
       .then(res => res.json())
@@ -22,12 +23,9 @@ function App() {
       .catch(err => console.error("Error fetching API:", err));
   }, []);
 
-  // LECTURA 2 (FIREBASE): Leemos si hay selecciones guardadas previamente en la nube
   const [savedSelections, loading, error] = useData('/selections');
 
-  // ESCRITURA (FIREBASE): Función para guardar los cursos seleccionados
   const saveToFirebase = () => {
-    // Apuntamos a la "rama" /selections de nuestro árbol JSON
     const selectionsRef = ref(database, 'selections');
     set(selectionsRef, selectedCourses)
       .then(() => alert('¡Tus cursos se guardaron en Firebase exitosamente!'))
@@ -51,23 +49,36 @@ function App() {
     <div className="container my-5">
       <header className="mb-4">
         <h1 className="fw-bold text-primary">{apiData.title}</h1>
-        <p className="lead text-muted">Integración con Firebase Realtime Database</p>
+        <p className="lead text-muted">Autenticación con Google</p>
       </header>
 
       <div className="d-flex justify-content-between align-items-center mb-4">
         <TermSelector term={term} setTerm={setTerm} />
         
-        {/* BOTÓN PARA ESCRIBIR EN LA BASE DE DATOS */}
-        <button 
-          className="btn btn-success shadow-sm" 
-          onClick={saveToFirebase}
-          disabled={selectedCourses.length === 0}
-        >
-          ☁️ Guardar Selección en la Nube
-        </button>
+        {/* Renderizado Condicional: Botones de Auth vs Botón de Guardar */}
+        <div>
+          {user ? (
+            <div className="d-flex align-items-center gap-3">
+              <span className="text-secondary small">Hola, {user.displayName}</span>
+              <button 
+                className="btn btn-success shadow-sm" 
+                onClick={saveToFirebase}
+                disabled={selectedCourses.length === 0}
+              >
+                ☁️ Guardar Selección
+              </button>
+              <button className="btn btn-outline-danger shadow-sm" onClick={signOutUser}>
+                Salir
+              </button>
+            </div>
+          ) : (
+            <button className="btn btn-outline-primary shadow-sm" onClick={signInWithGoogle}>
+              Iniciar sesión con Google para guardar
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* Retroalimentación de Lectura de Firebase */}
       {savedSelections && (
         <div className="alert alert-info shadow-sm">
           <strong>Última selección en la nube:</strong> Tienes {savedSelections.length} cursos guardados.

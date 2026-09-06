@@ -1,6 +1,8 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref } from "firebase/database";
 import { useObject } from "react-firebase-hooks/database";
+// Nuevas importaciones de Autenticación
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDg-uMeuist3a1ZuKOnfOB1XGtYbIZVVF4",
@@ -14,6 +16,12 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 export const database = getDatabase(app);
+export const auth = getAuth(app); // Exportamos la instancia de autenticación
+
+// Configuración del proveedor de Google
+const provider = new GoogleAuthProvider();
+export const signInWithGoogle = () => signInWithPopup(auth, provider);
+export const signOutUser = () => signOut(auth);
 
 export const useData = (path, transform) => {
   const [snapshot, loading, error] = useObject(ref(database, path));
