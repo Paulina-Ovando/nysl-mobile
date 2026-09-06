@@ -1,34 +1,43 @@
 import React from 'react';
-import gamesData from './data/games.json'; // Importamos el JSON
+import gamesData from './data/games.json';
 import './App.css';
 
-// 1. Definimos un Componente para la Tarjeta Individual
-const GameCard = ({ game }) => (
-  <div className="card mb-3 shadow-sm border-0">
-    <div className="card-body">
-      <h5 className="card-title fw-bold text-dark">{game.teams}</h5>
-      <h6 className="card-subtitle mb-2 text-muted">{game.date} - {game.time}</h6>
-      <p className="card-text mb-0">📍 {game.location}</p>
-    </div>
-  </div>
+// 1. Componente que representa una fila de la tabla
+const GameRow = ({ game }) => (
+  <tr>
+    <td className="fw-bold">{game.date}</td>
+    <td>{game.teams}</td>
+    <td>{game.location}</td>
+    <td>{game.time}</td>
+  </tr>
 );
 
-// 2. Componente Principal que renderiza la lista
+// 2. Componente principal envuelto en un "container"
 function App() {
   return (
-    <div className="container mt-4">
-      <header className="text-center mb-4">
-        <h1 className="fw-bold">NYSL Mobile App</h1>
-        <p className="text-secondary">Próximos Partidos</p>
+    <div className="container my-5">
+      <header className="mb-4">
+        <h1 className="fw-bold text-primary">NYSL Mobile App</h1>
+        <p className="lead text-muted">Calendario de la Temporada de Otoño</p>
       </header>
-      
-      {/* Usamos .map() para iterar sobre el JSON y crear una tarjeta por cada partido */}
-      <div className="row">
-        {gamesData.map((game) => (
-          <div className="col-12 col-md-6 col-lg-4" key={game.id}>
-            <GameCard game={game} />
-          </div>
-        ))}
+
+      {/* Tabla con estilos nativos de Bootstrap */}
+      <div className="table-responsive shadow-sm">
+        <table className="table table-bordered table-striped table-hover align-middle mb-0">
+          <thead className="table-dark">
+            <tr>
+              <th>Fecha</th>
+              <th>Equipos</th>
+              <th>Sede</th>
+              <th>Hora</th>
+            </tr>
+          </thead>
+          <tbody>
+            {gamesData.map((game) => (
+              <GameRow key={game.id} game={game} />
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
