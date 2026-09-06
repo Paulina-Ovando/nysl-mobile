@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "date": "9/01",
+    "teams": "U1 and U4",
+    "location": "AJ Katzenmaier",
+    "time": "9:30 a.m."
+  },
+  {
+    "id": 2,
+    "date": "9/01",
+    "teams": "U3 and U2",
+    "location": "Greenbay",
+    "time": "1:00 p.m."
+  },
+  {
+    "id": 3,
+    "date": "9/08",
+    "teams": "U5 and U6",
+    "location": "Howard A Yeager",
+    "time": "9:30 a.m."
+  },
+  {
+    "id": 4,
+    "date": "9/08",
+    "teams": "U6 and U1",
+    "location": "Marjorie P Hart",
+    "time": "1:00 p.m."
+  }
+]
